@@ -88,7 +88,6 @@ async fn main() {
                 eprintln!("Unable to save results: {}", err);
                 continue;
             }
-
         }
 
         let response_status = response.status();
@@ -111,7 +110,11 @@ async fn main() {
 }
 
 fn clean_string(input: &String) -> String {
-    input.chars().filter(|&c| c.is_ascii() && c >= ' ').collect::<String>().trim().replace(" ", "\\ ").to_string()
+    input.chars().filter(|&c| c.is_ascii() && c >= ' ').collect::<String>().trim()
+        .replace(",", "\\,")
+        .replace(" ", "\\ ")
+        .replace("=", "\\=")
+        .to_string()
 }
 
 fn read_config() -> Result<Config, Box<dyn Error>> {

@@ -96,9 +96,13 @@ fn handle_a2s_response(buf: &[u8], ping: u128) -> A2SInfoResult {
     let server_mod = read_string(&mut cursor);
     let server_game = read_string(&mut cursor);
     let game_id = read_short(&mut cursor);
-    let num_players = read_byte(&mut cursor);
+    let mut num_players = read_byte(&mut cursor);
     let max_players = read_byte(&mut cursor);
     let bot_players = read_byte(&mut cursor);
+
+    if bot_players <= num_players {
+        num_players -= bot_players;
+    }
 
     // println!("{} (map: {}) (mod: {}) (game: {}) (game_id: {}) (players: {}) (max_players: {}) (bots: {})",
     //     server_name, server_map, server_mod, server_game, game_id, num_players, max_players, bot_players);
