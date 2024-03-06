@@ -25,7 +25,9 @@ struct InfluxDBConfig {
 struct ServerConfig {
     host: String,
     #[serde(default = "default_port")]
-    port: u16
+    port: u16,
+    #[serde(default = "default_unknown")]
+    community: String
 }
 
 #[tokio::main]
@@ -33,11 +35,14 @@ async fn main() {
 
     let config = match read_config() {
         Ok(value) => value,
-        Err(err) => panic!("Unable to open config.yaml: {}", err),
+        Err(err) => {
+            eprintln!("Unable to open config.yaml: {}", err);
+            std::process::exit(1);
+        }
     };
 
     let queries: Vec<SourceQuery> = config.servers.into_iter().map(
-        |s|{SourceQuery::new(s.host, s.port)}
+        |s|{SourceQuery::new(s.host, s.port, s.community)}
     ).collect();
     
     let mut interval = interval(Duration::from_secs(config.frequency_secs));
@@ -51,6 +56,7 @@ async fn main() {
         config.influxdb.organization, config.influxdb.bucket);
     let client = reqwest::Client::new();
 
+    println!("Connector started. Querying every {} second(s).", config.frequency_secs);
     loop {
         interval.tick().await;
 
@@ -66,8 +72,8 @@ async fn main() {
                 }
             };
 
-            influx_data.push_str(&format!("a2sinfo,host={},game_folder={},game_name={},server_name={} ping={},num_players={},num_bots={},max_players={},map=\"{}\"\n",
-                q.full_host, result.folder, clean_string(&result.game), clean_string(&result.server_name),
+            influx_data.push_str(&format!("a2sinfo,host={},community={},game_folder={},game_name={},server_name={} ping={},num_players={},num_bots={},max_players={},map=\"{}\"\n",
+                q.full_host, q.community, result.folder, clean_string(&result.game), clean_string(&result.server_name),
                 result.ping, result.num_players, result.num_players, result.max_players, clean_string(&result.map)));
         }
 
@@ -117,4 +123,8 @@ fn read_config() -> Result<Config, Box<dyn Error>> {
 
 fn default_port() -> u16 {
     27015
+}
+
+fn default_unknown() -> String {
+    "unknown".to_string()
 }

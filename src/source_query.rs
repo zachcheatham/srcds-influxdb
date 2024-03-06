@@ -6,7 +6,8 @@ use std::io::{Cursor, Read, BufRead};
 pub struct SourceQuery {
     host: String,
     port: u16,
-    pub full_host: String
+    pub full_host: String,
+    pub community: String
 }
 
 #[derive(Debug)]
@@ -29,17 +30,9 @@ const CHALLENGE_HEADER: u8 = b'\x41';
 
 impl SourceQuery {
 
-    pub fn new(host: String, port: u16) -> Self {
+    pub fn new(host: String, port: u16, community: String) -> Self {
         let full_host = format!("{}:{}", host, port);
-        SourceQuery { host, port, full_host }
-    }
-
-    pub fn get_host(&self) -> &str {
-        &self.host
-    }
-
-    pub fn get_port(&self) -> u16 {
-        self.port
+        SourceQuery { host, port, full_host, community }
     }
 
     pub fn query_a2s_info(&self) -> Result<A2SInfoResult, Box<dyn Error>> {
