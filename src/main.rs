@@ -72,9 +72,9 @@ async fn main() {
                 }
             };
 
-            influx_data.push_str(&format!("a2sinfo,host={},community={},game_folder={},game_name={},server_name={} ping={},num_players={},num_bots={},max_players={},map=\"{}\"\n",
+            influx_data.push_str(&format!("a2sinfo,host={},community={},game_folder={},game_name={},server_name={},map={} ping={},num_players={},num_bots={},max_players={}\n",
                 q.full_host, q.community, result.folder, clean_string(&result.game), clean_string(&result.server_name),
-                result.ping, result.num_players, result.num_players, result.max_players, clean_string(&result.map)));
+                clean_string(&result.map), result.ping, result.num_players, result.num_players, result.max_players));
         }
 
         let response: Response;
