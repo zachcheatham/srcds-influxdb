@@ -63,8 +63,8 @@ impl SourceQuery {
 
             // println!("{:x?}", challenge_reply);
 
-            socket.send_to(&challenge_reply, &self.full_host).unwrap();
-            socket.recv_from(&mut buf).unwrap();
+            socket.send_to(&challenge_reply, &self.full_host)?;
+            socket.recv_from(&mut buf)?;
 
             // println!("{:x?}", buf);
 
