@@ -10,7 +10,7 @@ pub struct SourceQuery {
     pub community: String
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct A2SInfoResult {
     pub ping: u128,
     pub server_name: String,
